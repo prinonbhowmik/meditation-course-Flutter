@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:meditation_course/ApiHelper/api_list.dart';
 import 'package:meditation_course/Class/courses.dart';
 import 'package:meditation_course/Class/registration.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
+import '../ModelClass/Users/login_user.dart';
+
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -16,6 +19,12 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPass = TextEditingController();
+  var loggedIn = false;
+  var base_url = "http://192.168.68.101:8081/api/";
+  final String applicat = 'application';
+  final String authpassword = 'secret';
+  String basicAuth =
+      'Basic ${base64.encode(utf8.encode('aplication:password'))}';
 
   Future<void> _launchUrl(Uri url) async {
     if (!await launchUrl(url)) {
@@ -95,24 +104,38 @@ class _LoginState extends State<Login> {
                           width: MediaQuery.of(context).size.width - 30,
                           height: (MediaQuery.of(context).size.width) * 0.10,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              final String applicat = 'application';
+                              final String authpassword = 'secret';
+                              String basicAuth =
+                                  'Basic ${base64.encode(utf8.encode('$applicat:$authpassword'))}';
+                              Response response = await http.post(Uri.parse("http://192.168.68.102:8081/api/oauth/token"),
+                                  headers: {'authorization': basicAuth},
+                              body: {
+                                'grant_type':'password',
+                                'username':_controllerEmail.text.toString(),
+                                'password':_controllerPass.text.toString()
+                              });
 
-                              Login? _login = ApiHelper().loginUser("password", _controllerEmail.text.toString(), _controllerPass.text.toString());
+                              print("checkCode : "+response.body);
+                              //var msg = loginFromJson(response.body);
 
-                              print("CheckErrorData : "+_login.toString());
-
-                              if(_login != null){
-                                print(_login);
-                                print("login successful");
+                              if(response.statusCode == 200){
                                 Fluttertoast.showToast(msg: "Login successful!");
+                                try{
+                                  var jsonResponse = jsonDecode(response.body);
+                                  var token = jsonResponse['access_token'];
+                                  print('CheckToken: '+token);
+                                }catch(e){
+                                  print('CheckError : '+e.toString());
+                                }
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Courses()
-                                    )
-                                );
+                                        builder: (context) => Courses()));
                               }else{
-                                Fluttertoast.showToast(msg: "Incorrect input!");
+
+                                Fluttertoast.showToast(msg: 'Invalid credential');
                               }
 
                             },

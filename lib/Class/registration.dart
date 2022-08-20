@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meditation_course/ApiHelper/api_list.dart';
 import 'package:meditation_course/Class/login.dart';
+import 'package:meditation_course/Class/otp_verify.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -82,6 +83,7 @@ class _RegistrationState extends State<Registration> {
                         controller: _controllerfullname,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
+                            errorText: "Field can't be empty!",
                             labelText: "Full name *"),
                       ),
                     ),
@@ -91,6 +93,7 @@ class _RegistrationState extends State<Registration> {
                         controller: _controllerUser,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
+                            errorText: "Field can't be empty!",
                             labelText: "User name *"),
                       ),
                     ),
@@ -100,6 +103,7 @@ class _RegistrationState extends State<Registration> {
                         controller: _controllerEmail,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
+                            errorText: "Field can't be empty!",
                             labelText: "Enter Email Address"),
                         keyboardType: TextInputType.emailAddress,
                       ),
@@ -112,6 +116,7 @@ class _RegistrationState extends State<Registration> {
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Password',
+                          errorText: "Field can't be empty!",
                         ),
                       ),
                     ),
@@ -123,6 +128,7 @@ class _RegistrationState extends State<Registration> {
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Confirm Password',
+                          errorText: "Field can't be empty!",
                         ),
                       ),
                     ),
@@ -148,12 +154,12 @@ class _RegistrationState extends State<Registration> {
 
                                 if(_register !=null){
                                   print(_register);
-                                  print("login successful");
+
                                   Fluttertoast.showToast(msg: "Registration successful!");
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Login()));
+                                          builder: (context) => Otp_Verify()));
                                 }else{
                                   Fluttertoast.showToast(msg: "Input is not valid");
                                 }
