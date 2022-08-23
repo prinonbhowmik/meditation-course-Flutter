@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meditation_course/Class/courses.dart';
+import 'package:meditation_course/Class/forgot_password.dart';
 import 'package:meditation_course/Class/registration.dart';
 import 'package:meditation_course/ModelClass/Users/Login/UserBaseResponse.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -163,11 +164,21 @@ class _LoginState extends State<Login> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'Forgot Password',
-                              style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
+                            InkWell(
+                              onTap:(){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ForgotPassword()
+                                    )
+                                );
+                              },
+                              child: const Text(
+                                'Forgot Password',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
                             ),
                             InkWell(

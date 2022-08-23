@@ -34,15 +34,14 @@ class _RegistrationState extends State<Registration> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Form(
-          key: _formKey,
-          child: Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
+      key: _formKey,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
             backgroundColor: Colors.blue,
             leading: const Icon(
               Icons.menu,
@@ -62,9 +61,8 @@ class _RegistrationState extends State<Registration> {
                       fontFamily: 'RobotoMono'),
                 ),
               ],
-            )
-      ),
-      body: ListView(
+            )),
+        body: ListView(
           children: [
             Expanded(
                 flex: 8,
@@ -87,7 +85,7 @@ class _RegistrationState extends State<Registration> {
                       Padding(
                         padding: EdgeInsets.all(10.0),
                         child: TextFormField(
-                          validator: (value){
+                          validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter full name';
                             }
@@ -103,7 +101,7 @@ class _RegistrationState extends State<Registration> {
                       Padding(
                         padding: EdgeInsets.all(10.0),
                         child: TextFormField(
-                          validator: (value){
+                          validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter username';
                             }
@@ -119,8 +117,10 @@ class _RegistrationState extends State<Registration> {
                       Padding(
                         padding: EdgeInsets.all(10.0),
                         child: TextFormField(
-                          validator: (value){
-                            if (value == null || value.isEmpty || !value.contains('@')) {
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !value.contains('@')) {
                               return 'Please enter valid email';
                             }
                             return null;
@@ -136,7 +136,7 @@ class _RegistrationState extends State<Registration> {
                       Padding(
                         padding: EdgeInsets.all(10.0),
                         child: TextFormField(
-                          validator: (value){
+                          validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter password';
                             }
@@ -154,7 +154,7 @@ class _RegistrationState extends State<Registration> {
                       Padding(
                         padding: EdgeInsets.all(10.0),
                         child: TextFormField(
-                          validator: (value){
+                          validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter password';
                             }
@@ -176,42 +176,47 @@ class _RegistrationState extends State<Registration> {
                           height: (MediaQuery.of(context).size.width) * 0.10,
                           child: ElevatedButton(
                             onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                var response = await http.post(
+                                    Uri.parse(
+                                        "http://192.168.68.103/api/signup"),
+                                    body: {
+                                      "fullname":
+                                          _controllerfullname.text.toString(),
+                                      "username":
+                                          _controllerUser.text.toString(),
+                                      "email": _controllerEmail.text.toString(),
+                                      "password":
+                                          _controllerConfirmPass.text.toString()
+                                    });
 
-                              if(_formKey.currentState!.validate()){
-                                var response = await http
-                                    .post(Uri.parse("http://192.168.68.103/api/signup"), body: {
-                                  "fullname": _controllerfullname.text.toString(),
-                                  "username": _controllerUser.text.toString(),
-                                  "email": _controllerEmail.text.toString(),
-                                  "password": _controllerConfirmPass.text.toString()
-                                });
+                                var responseData = RegisterUser.fromJson(
+                                    json.decode(response.body));
 
-                                var responseData = RegisterUser.fromJson(json.decode(response.body));
-
-                                if(response.statusCode == 200){
-                                  Fluttertoast.showToast(msg: "Registration successful!");
+                                if (response.statusCode == 200) {
+                                  Fluttertoast.showToast(
+                                      msg: "Registration successful!");
 
                                   String? otp = responseData.otp;
 
-
                                   Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Otp_Verify(
-                                            otp: otp.toString(),
-                                            email: responseData.email.toString(),
-                                          )
-                                      ),
-
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Otp_Verify(
+                                              otp: otp.toString(),
+                                              email:
+                                                  responseData.email.toString(),
+                                            )),
                                   );
-                                }else{
-                                  Fluttertoast.showToast(msg: 'Invalid credential');
+                                } else {
+                                  Fluttertoast.showToast(
+                                      msg: 'Invalid credential');
                                 }
                               }
-
                             },
                             child: Text('Register'),
-                            style: ElevatedButton.styleFrom(primary: Colors.blue),
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.blue),
                           ),
                         ),
                       ),
@@ -239,8 +244,7 @@ class _RegistrationState extends State<Registration> {
                       ),
                     ],
                   ),
-                )
-            ),
+                )),
             Expanded(
                 flex: 1,
                 child: Align(
@@ -250,15 +254,15 @@ class _RegistrationState extends State<Registration> {
                     children: [
                       const Text('Copyright © '),
                       InkWell(
-                        onTap: () async{
-                          final Uri url = Uri.parse("https://www.techanalyticaltd.com/");
+                        onTap: () async {
+                          final Uri url =
+                              Uri.parse("https://www.techanalyticaltd.com/");
                           _launchUrl(url);
                         },
                         child: const Text('Tech Analytica Limited ',
                             style: TextStyle(
                               decoration: TextDecoration.underline,
-                            )
-                        ),
+                            )),
                       ),
                       Text('2022'),
                     ],
@@ -268,8 +272,8 @@ class _RegistrationState extends State<Registration> {
               height: 30,
             )
           ],
+        ),
       ),
-    ),
-        ));
+    ));
   }
 }

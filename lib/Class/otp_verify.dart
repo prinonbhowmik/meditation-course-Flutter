@@ -49,68 +49,64 @@ class _Otp_VerifyState extends State<Otp_Verify> {
                 ],
               )),
           body: Center(
-            child: Expanded(
-              child: Align(
-                alignment: FractionalOffset.center,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(10.0),
-                      child: TextFormField(
-                        controller: _controllerOtp,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Otp',
-                          errorText: "Field can't be empty!",
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: TextFormField(
+                    controller: _controllerOtp,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Otp',
+                      errorText: "Field can't be empty!",
 
-                        ),
-                      ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width - 30,
-                        height: (MediaQuery.of(context).size.width) * 0.10,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            print("CheckPassData :  "+widget.email+" "+widget.otp);
-
-                            if(_controllerOtp.text.toString() == widget.otp){
-                              final response = await http.post(Uri.parse("http://192.168.68.103/api/verify"),
-                                  body: {
-                                    'email':widget.email,
-                                    'password':_controllerOtp.text.toString()
-                                  });
-
-                              var responseBody = OtpVerify.fromJson(json.decode(response.body));
-
-                              if(response.statusCode == 200){
-                                Fluttertoast.showToast(msg: widget.email+" is active now!");
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Courses()
-                                    ),
-                                        (route) => false
-                                );
-
-                              }else{
-                                Fluttertoast.showToast(msg: "Otp doesn't matched");
-                              }
-                            }else{
-                              Fluttertoast.showToast(msg: "Otp doesn't matched");
-                            }
-                          },
-                          child: Text('Verify'),
-                          style:
-                          ElevatedButton.styleFrom(primary: Colors.blue),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: EdgeInsets.all(15.0),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width - 30,
+                    height: (MediaQuery.of(context).size.width) * 0.10,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        print("CheckPassData :  "+widget.email+" "+widget.otp);
 
+                        if(_controllerOtp.text.toString() == widget.otp){
+                          final response = await http.post(Uri.parse("http://192.168.68.103/api/verify"),
+                              body: {
+                                'email':widget.email,
+                                'password':_controllerOtp.text.toString()
+                              });
+
+                          var responseBody = OtpVerify.fromJson(json.decode(response.body));
+
+                          if(response.statusCode == 200){
+                            Fluttertoast.showToast(msg: widget.email+" is active now!");
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Courses()
+                                ),
+                                    (route) => false
+                            );
+
+                          }else{
+                            Fluttertoast.showToast(msg: "Otp doesn't matched");
+                          }
+                        }else{
+                          Fluttertoast.showToast(msg: "Otp doesn't matched");
+                        }
+                      },
+                      child: Text('Verify'),
+                      style:
+                      ElevatedButton.styleFrom(primary: Colors.blue),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ));
