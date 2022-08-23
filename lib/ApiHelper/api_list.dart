@@ -37,7 +37,7 @@ class ApiHelper {
     }
   }
 
-  Future<LoginUser?> loginUser(String grant_type,String username, String password) async {
+  /*Future<LoginUser?> loginUser(String grant_type,String username, String password) async {
     var response = await http.post(Uri.parse(base_url+"oauth/token"),
         headers: {'authorization': basicAuth},
         body: {
@@ -54,11 +54,11 @@ class ApiHelper {
       print(response.statusCode);
       var responseBody = response.body;
       print("Response Body $responseBody");
-      return loginFromJson(responseBody);
+      return LoginUser.fromJson(responseBody);
     }else {
       print(
           "Error$response");
       return null;
     }
-  }
+  }*/
 }

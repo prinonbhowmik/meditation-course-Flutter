@@ -26,6 +26,8 @@ class _LoginState extends State<Login> {
   String basicAuth =
       'Basic ${base64.encode(utf8.encode('aplication:password'))}';
 
+  bool _isObscure = true;
+
   Future<void> _launchUrl(Uri url) async {
     if (!await launchUrl(url)) {
       throw 'Could not launch $url';
@@ -89,13 +91,24 @@ class _LoginState extends State<Login> {
                       ),
                       Padding(
                         padding: EdgeInsets.all(15.0),
-                        child: TextField(
+                        child: TextFormField(
                           controller: _controllerPass,
-                          obscureText: true,
-                          decoration: const InputDecoration(
+                          obscureText: _isObscure,
+                          decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                  _isObscure ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                            ),
                           ),
+
                         ),
                       ),
                       Padding(
@@ -109,7 +122,7 @@ class _LoginState extends State<Login> {
                               final String authpassword = 'secret';
                               String basicAuth =
                                   'Basic ${base64.encode(utf8.encode('$applicat:$authpassword'))}';
-                              Response response = await http.post(Uri.parse("http://192.168.68.102:8081/api/oauth/token"),
+                              final response = await http.post(Uri.parse("http://192.168.68.103/api/oauth/token"),
                                   headers: {'authorization': basicAuth},
                               body: {
                                 'grant_type':'password',
@@ -118,14 +131,15 @@ class _LoginState extends State<Login> {
                               });
 
                               print("checkCode : "+response.body);
-                              //var msg = loginFromJson(response.body);
+                              print("checkCode : "+response.statusCode.toString());
 
                               if(response.statusCode == 200){
                                 Fluttertoast.showToast(msg: "Login successful!");
                                 try{
-                                  var jsonResponse = jsonDecode(response.body);
-                                  var token = jsonResponse['access_token'];
-                                  print('CheckToken: '+token);
+                                  //String responseBody = utf8.decoder.convert(response.body);
+                                  var responseData = loginUserFromJson(response.body.toString());
+                                  var token = responseData.data!.accessToken.toString();
+                                  print("CheckToken : "+token);
                                 }catch(e){
                                   print('CheckError : '+e.toString());
                                 }
@@ -134,7 +148,6 @@ class _LoginState extends State<Login> {
                                     MaterialPageRoute(
                                         builder: (context) => Courses()));
                               }else{
-
                                 Fluttertoast.showToast(msg: 'Invalid credential');
                               }
 

@@ -1,89 +1,77 @@
 import 'dart:convert';
 
-LoginUser loginFromJson(String str) => LoginUser.fromJson(json.decode(str));
+LoginUser loginUserFromJson(String str) => LoginUser.fromJson(json.decode(str));
 
-String loginToJson(LoginUser data) => json.encode(data.toJson());
+String loginUserToJson(LoginUser data) => json.encode(data.toJson());
 
 class LoginUser {
   LoginUser({
-    required this.data,
-    required this.result,
+    this.data,
+    this.result,
   });
 
-  Data data;
-  Result result;
+  Data? data;
+  Result? result;
 
-  factory LoginUser.fromJson(Map<String, dynamic> json) => LoginUser(
+  factory LoginUser.fromJson(dynamic json) => LoginUser(
     data: Data.fromJson(json["data"]),
     result: Result.fromJson(json["result"]),
   );
 
   Map<String, dynamic> toJson() => {
-    "data": data.toJson(),
-    "result": result.toJson(),
+    "data": data!.toJson(),
+    "result": result!.toJson(),
   };
 }
 
 class Data {
   Data({
-    required this.accessToken,
-    required this.accessTokenExpiresAt,
-    required this.refreshToken,
-    required this.refreshTokenExpiresAt,
-    required this.user,
+    this.accessToken,
+    this.accessTokenExpiresAt,
+    this.refreshToken,
+    this.refreshTokenExpiresAt,
+    this.username,
+    this.expiryTime,
   });
 
-  String accessToken;
-  DateTime accessTokenExpiresAt;
-  String refreshToken;
-  DateTime refreshTokenExpiresAt;
-  User user;
+  String? accessToken;
+  DateTime? accessTokenExpiresAt;
+  String? refreshToken;
+  DateTime? refreshTokenExpiresAt;
+  String? username;
+  String? expiryTime;
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(
+  factory Data.fromJson(dynamic json) => Data(
     accessToken: json["access_token"],
     accessTokenExpiresAt: DateTime.parse(json["accessTokenExpiresAt"]),
     refreshToken: json["refresh_token"],
     refreshTokenExpiresAt: DateTime.parse(json["refreshTokenExpiresAt"]),
-    user: User.fromJson(json["user"]),
+    username: json["username"],
+    expiryTime: json["expiryTime"],
   );
 
   Map<String, dynamic> toJson() => {
     "access_token": accessToken,
-    "accessTokenExpiresAt": accessTokenExpiresAt.toIso8601String(),
+    "accessTokenExpiresAt": accessTokenExpiresAt!.toIso8601String(),
     "refresh_token": refreshToken,
-    "refreshTokenExpiresAt": refreshTokenExpiresAt.toIso8601String(),
-    "user": user.toJson(),
-  };
-}
-
-class User {
-  User({
-    required this.username,
-  });
-
-  String username;
-
-  factory User.fromJson(Map<String, dynamic> json) => User(
-    username: json["username"],
-  );
-
-  Map<String, dynamic> toJson() => {
+    "refreshTokenExpiresAt": refreshTokenExpiresAt!.toIso8601String(),
     "username": username,
+    "expiryTime": expiryTime,
   };
 }
 
 class Result {
   Result({
-    required this.isError,
-    required this.status,
-    required this.errorMsg,
+    this.isError,
+    this.status,
+    this.errorMsg,
   });
 
-  bool isError;
-  int status;
-  ErrorMsg errorMsg;
+  bool? isError;
+  int? status;
+  ErrorMsg? errorMsg;
 
-  factory Result.fromJson(Map<String, dynamic> json) => Result(
+  factory Result.fromJson(dynamic json) => Result(
     isError: json["isError"],
     status: json["status"],
     errorMsg: ErrorMsg.fromJson(json["errorMsg"]),
@@ -92,26 +80,26 @@ class Result {
   Map<String, dynamic> toJson() => {
     "isError": isError,
     "status": status,
-    "errorMsg": errorMsg.toJson(),
+    "errorMsg": errorMsg!.toJson(),
   };
 }
 
 class ErrorMsg {
   ErrorMsg({
-    required this.statusCode,
-    required this.status,
-    required this.code,
-    required this.message,
-    required this.name,
+    this.statusCode,
+    this.status,
+    this.code,
+    this.message,
+    this.name,
   });
 
-  int statusCode;
-  int status;
-  int code;
-  String message;
-  String name;
+  int? statusCode;
+  int? status;
+  int? code;
+  String? message;
+  String? name;
 
-  factory ErrorMsg.fromJson(Map<String, dynamic> json) => ErrorMsg(
+  factory ErrorMsg.fromJson(dynamic json) => ErrorMsg(
     statusCode: json["statusCode"],
     status: json["status"],
     code: json["code"],
