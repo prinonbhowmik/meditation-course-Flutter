@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meditation_course/Class/courses.dart';
 import 'package:meditation_course/Class/registration.dart';
+import 'package:meditation_course/ModelClass/Users/Login/UserBaseResponse.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import '../ModelClass/Users/login_user.dart';
 
 
 class Login extends StatefulWidget {
@@ -137,9 +137,9 @@ class _LoginState extends State<Login> {
                                 Fluttertoast.showToast(msg: "Login successful!");
                                 try{
                                   //String responseBody = utf8.decoder.convert(response.body);
-                                  var responseData = loginUserFromJson(response.body.toString());
-                                  var token = responseData.data!.accessToken.toString();
-                                  print("CheckToken : "+token);
+                                  var responseData = UserBaseResponse.fromJson(json.decode(response.body));
+                                  String? token = responseData.data?.accessToken.toString();
+                                  print("CheckToken :  $token");
                                 }catch(e){
                                   print('CheckError : '+e.toString());
                                 }

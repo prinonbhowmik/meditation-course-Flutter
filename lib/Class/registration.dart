@@ -8,6 +8,7 @@ import 'package:meditation_course/ApiHelper/api_list.dart';
 import 'package:meditation_course/Class/courses.dart';
 import 'package:meditation_course/Class/login.dart';
 import 'package:meditation_course/Class/otp_verify.dart';
+import 'package:meditation_course/ModelClass/Users/Registration/Register_user.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -185,14 +186,23 @@ class _RegistrationState extends State<Registration> {
                                   "password": _controllerConfirmPass.text.toString()
                                 });
 
+                                var responseData = RegisterUser.fromJson(json.decode(response.body));
+
                                 if(response.statusCode == 200){
                                   Fluttertoast.showToast(msg: "Registration successful!");
-                                  Navigator.pushAndRemoveUntil(
+
+                                  String? otp = responseData.otp;
+
+
+                                  Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Courses()
+                                          builder: (context) => Otp_Verify(
+                                            otp: otp.toString(),
+                                            email: responseData.email.toString(),
+                                          )
                                       ),
-                                      ModalRoute.withName("/courses")
+
                                   );
                                 }else{
                                   Fluttertoast.showToast(msg: 'Invalid credential');

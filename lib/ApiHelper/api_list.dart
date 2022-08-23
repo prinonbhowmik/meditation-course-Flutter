@@ -1,9 +1,6 @@
 import 'dart:convert';
-
-import 'package:meditation_course/ModelClass/Users/register_user.dart';
 import 'package:http/http.dart' as http;
-
-import '../ModelClass/Users/login_user.dart';
+import 'package:meditation_course/ModelClass/Users/Registration/Register_user.dart';
 
 class ApiHelper {
   var base_url = "http://192.168.68.101:8081/api/";
@@ -12,7 +9,7 @@ class ApiHelper {
   String basicAuth =
       'Basic ${base64.encode(utf8.encode('aplication:password'))}';
 
-  Future<Register?> registerUser(String fullname, String username, String email, String password) async {
+  Future<RegisterUser?> registerUser(String fullname, String username, String email, String password) async {
     var response = await http
         .post(Uri.parse(base_url+"signup"), body: {
       "fullname": fullname,
@@ -29,7 +26,7 @@ class ApiHelper {
        print(response.statusCode);
        var responseBody = response.body;
       print("Response Body$responseBody");
-      return registerFromJson(responseBody);
+      return RegisterUser.fromJson(jsonDecode(responseBody));
     } else {
        print(
           "Error$response");
