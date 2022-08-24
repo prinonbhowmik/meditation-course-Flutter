@@ -4,7 +4,7 @@
 
    <application
        android:usesCleartextTraffic="true"
-        android:label="meditation_course"
+        android:label="Mind School"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

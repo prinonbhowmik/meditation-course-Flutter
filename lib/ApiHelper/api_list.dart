@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:meditation_course/ModelClass/Users/Login/UserBaseResponse.dart';
 import 'package:meditation_course/ModelClass/Users/Registration/Register_user.dart';
 
 class ApiHelper {
@@ -34,7 +35,7 @@ class ApiHelper {
     }
   }
 
-  /*Future<LoginUser?> loginUser(String grant_type,String username, String password) async {
+  Future<UserBaseResponse?> loginUser(String grant_type,String username, String password) async {
     var response = await http.post(Uri.parse(base_url+"oauth/token"),
         headers: {'authorization': basicAuth},
         body: {
@@ -47,15 +48,6 @@ class ApiHelper {
 
     print("CheckLogin : "+data);
 
-    if (response.statusCode == 200){
-      print(response.statusCode);
-      var responseBody = response.body;
-      print("Response Body $responseBody");
-      return LoginUser.fromJson(responseBody);
-    }else {
-      print(
-          "Error$response");
-      return null;
-    }
-  }*/
+    return UserBaseResponse.fromJson(json.decode(response.body));
+  }
 }

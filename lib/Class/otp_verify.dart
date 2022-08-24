@@ -1,12 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:meditation_course/ApiHelper/base_url.dart';
 import 'package:meditation_course/Class/courses.dart';
-import 'package:meditation_course/ModelClass/Users/Registration/Otp_Verify.dart';
-import 'package:meditation_course/ModelClass/Users/Registration/Register_user.dart';
-
+import 'package:meditation_course/ModelClass/Users/Registration/OtpVerify/OtpVerify.dart';
 
 class Otp_Verify extends StatefulWidget {
   final String email;
@@ -60,7 +58,6 @@ class _Otp_VerifyState extends State<Otp_Verify> {
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Otp',
-                      errorText: "Field can't be empty!",
 
                     ),
                   ),
@@ -72,26 +69,33 @@ class _Otp_VerifyState extends State<Otp_Verify> {
                     height: (MediaQuery.of(context).size.width) * 0.10,
                     child: ElevatedButton(
                       onPressed: () async {
-                        print("CheckPassData :  "+widget.email+" "+widget.otp);
 
-                        if(_controllerOtp.text.toString() == widget.otp){
-                          final response = await http.post(Uri.parse("http://192.168.68.103/api/verify"),
+
+                        if(_controllerOtp.text.toString() == widget.otp.toString()){
+                          final response = await http.post(Uri.parse(BaseUrl+"verify"),
                               body: {
-                                'email':widget.email,
-                                'password':_controllerOtp.text.toString()
+                                'email':widget.email.toString(),
+                                'otp':_controllerOtp.text.toString()
                               });
 
                           var responseBody = OtpVerify.fromJson(json.decode(response.body));
-
+                          print("CheckCode: "+response.statusCode.toString());
+                          print("CheckPassData :  "+widget.email+" "+widget.otp);
                           if(response.statusCode == 200){
-                            Fluttertoast.showToast(msg: widget.email+" is active now!");
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Courses()
-                                ),
-                                    (route) => false
-                            );
+                            if (responseBody.result!.status==202){
+                              print(responseBody.data);
+                              Fluttertoast.showToast(msg: widget.email+" is active now!");
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Courses()
+                                  ),
+                                      (route) => false
+                              );
+                            }else{
+                              var errorMsg = responseBody.result!.errorMsg;
+                              Fluttertoast.showToast(msg: '$errorMsg');
+                            }
 
                           }else{
                             Fluttertoast.showToast(msg: "Otp doesn't matched");

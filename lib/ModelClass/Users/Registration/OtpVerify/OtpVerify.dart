@@ -1,3 +1,4 @@
+import 'Data.dart';
 import 'Result.dart';
 
 class OtpVerify {
@@ -6,15 +7,17 @@ class OtpVerify {
       this.result,});
 
   OtpVerify.fromJson(dynamic json) {
-    data = json['data'];
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
     result = json['result'] != null ? Result.fromJson(json['result']) : null;
   }
-  String? data;
+  Data? data;
   Result? result;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['data'] = data;
+    if (data != null) {
+      map['data'] = data!.toJson();
+    }
     if (result != null) {
       map['result'] = result!.toJson();
     }

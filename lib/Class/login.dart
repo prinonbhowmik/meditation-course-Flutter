@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:meditation_course/ApiHelper/base_url.dart';
 import 'package:meditation_course/Class/courses.dart';
 import 'package:meditation_course/Class/forgot_password.dart';
 import 'package:meditation_course/Class/registration.dart';
@@ -32,6 +33,18 @@ class _LoginState extends State<Login> {
   Future<void> _launchUrl(Uri url) async {
     if (!await launchUrl(url)) {
       throw 'Could not launch $url';
+    }
+  }
+
+  Future<bool> validation () async {
+    if(_controllerEmail.text.toString() == null || _controllerEmail.text.toString().isEmpty){
+      Fluttertoast.showToast(msg: 'Enter username');
+      return false;
+    }else if(_controllerPass.text.toString() == null || _controllerPass.text.toString().isEmpty){
+      Fluttertoast.showToast(msg: 'Enter password');
+      return false;
+    } else{
+      return true;
     }
   }
 
@@ -119,37 +132,40 @@ class _LoginState extends State<Login> {
                           height: (MediaQuery.of(context).size.width) * 0.10,
                           child: ElevatedButton(
                             onPressed: () async {
-                              final String applicat = 'application';
-                              final String authpassword = 'secret';
-                              String basicAuth =
-                                  'Basic ${base64.encode(utf8.encode('$applicat:$authpassword'))}';
-                              final response = await http.post(Uri.parse("http://192.168.68.103/api/oauth/token"),
-                                  headers: {'authorization': basicAuth},
-                              body: {
-                                'grant_type':'password',
-                                'username':_controllerEmail.text.toString(),
-                                'password':_controllerPass.text.toString()
-                              });
+                              if(validation() == true){
+                                final String applicat = 'application';
+                                final String authpassword = 'secret';
+                                String basicAuth =
+                                    'Basic ${base64.encode(utf8.encode('$applicat:$authpassword'))}';
+                                final response = await http.post(Uri.parse(BaseUrl+"oauth/token"),
+                                    headers: {'authorization': basicAuth},
+                                    body: {
+                                      'grant_type':'password',
+                                      'username':_controllerEmail.text.toString(),
+                                      'password':_controllerPass.text.toString()
+                                    });
 
-                              print("checkCode : "+response.body);
-                              print("checkCode : "+response.statusCode.toString());
+                                print("checkCode : "+response.body);
+                                print("checkCode : "+response.statusCode.toString());
 
-                              if(response.statusCode == 200){
-                                Fluttertoast.showToast(msg: "Login successful!");
-                                try{
-                                  //String responseBody = utf8.decoder.convert(response.body);
-                                  var responseData = UserBaseResponse.fromJson(json.decode(response.body));
-                                  String? token = responseData.data?.accessToken.toString();
-                                  print("CheckToken :  $token");
-                                }catch(e){
-                                  print('CheckError : '+e.toString());
+                                if(response.statusCode == 200){
+                                  Fluttertoast.showToast(msg: "Login successful!");
+                                  try{
+                                    var responseData = UserBaseResponse.fromJson(json.decode(response.body));
+                                    String? token = responseData.data?.accessToken.toString();
+                                    print("CheckToken :  $token");
+                                  }catch(e){
+                                    print('CheckError : '+e.toString());
+                                  }
+                                  Navigator.pushAndRemoveUntil(context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Courses()
+                                      ),
+                                          (route) => false
+                                  );
+                                }else{
+                                  Fluttertoast.showToast(msg: 'Invalid credential');
                                 }
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Courses()));
-                              }else{
-                                Fluttertoast.showToast(msg: 'Invalid credential');
                               }
 
                             },
