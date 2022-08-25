@@ -7,7 +7,6 @@ import 'package:meditation_course/Class/courses.dart';
 import 'package:meditation_course/Class/forgot_password.dart';
 import 'package:meditation_course/Class/registration.dart';
 import 'package:meditation_course/ModelClass/Users/Login/UserBaseResponse.dart';
-import 'package:meditation_course/Utils/google_signin_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -42,7 +41,7 @@ class _LoginState extends State<Login> {
       return true;
     }
   }
-  Future _signinGoogle() async {
+  /*Future _signinGoogle() async {
     GoogleSignIn _googleSignin = GoogleSignIn(
       scopes: <String>[
         'email',
@@ -57,7 +56,61 @@ class _LoginState extends State<Login> {
     } catch (error) {
       print("GoogleTerms : "+error.toString());
     }
+  }*/
+
+  void login() async {
+    GoogleSignIn _googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+        // you can add extras if you require
+      ],
+    );
+
+    _googleSignIn.signIn().then((GoogleSignInAccount? acc) async {
+      GoogleSignInAuthentication? auth = await acc?.authentication;
+      print(acc?.id);
+      print(acc?.email);
+      print(acc?.displayName);
+      print(acc?.photoUrl);
+
+      acc?.authentication.then((GoogleSignInAuthentication auth) async {
+        print(auth.idToken);
+        print(auth.accessToken);
+      });
+    });
   }
+
+  /*void _fblogin() async {
+    final facebookLogin = FacebookLogin();
+    final facebookLoginResult = await facebookLogin?.logIn(['email']);
+
+    print(facebookLoginResult?.accessToken);
+    print(facebookLoginResult?.accessToken.token);
+    print(facebookLoginResult?.accessToken.expires);
+    print(facebookLoginResult?.accessToken.permissions);
+    print(facebookLoginResult?.accessToken.userId);
+    print(facebookLoginResult?.accessToken.isValid());
+
+    print(facebookLoginResult?.errorMessage);
+    print(facebookLoginResult?.status);
+
+    final token = facebookLoginResult?.accessToken.token;
+
+    /// for profile details also use the below code
+    final graphResponse = await http.get(Uri.parse("https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token="+token!));
+    final profile = json.decode(graphResponse.body);
+    print(profile);
+    *//*
+    from profile you will get the below params
+    {
+     "name": "Iiro Krankka",
+     "first_name": "Iiro",
+     "last_name": "Krankka",
+     "email": "iiro.krankka\u0040gmail.com",
+     "id": "<user id here>"
+    }
+   *//*
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -233,20 +286,33 @@ class _LoginState extends State<Login> {
                         children: [
                           IconButton(
                             icon: Image.asset("images/google.png"),
-                            onPressed:(){
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const SignInDemo()
-                                  )
+                            onPressed: () async {
+                              GoogleSignIn _googleSignin = GoogleSignIn(
+                                scopes: <String>[
+                                  'email',
+                                  'https://www.googleapis.com/auth/contacts.readonly',
+                                ],
                               );
+
+                              try {
+                                var result = await _googleSignin.signIn();
+
+                                print("GoogleTerms : "+result.toString());
+                              } catch (error) {
+                                print("GoogleTerms : "+error.toString());
+                                Navigator.pushAndRemoveUntil(context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Courses()
+                                    ),
+                                        (route) => false
+                                );
+                              }
+
                             },
                           ),
                           IconButton(
                             icon: Image.asset("images/facebook.png"),
-                            onPressed: () {
-                              Fluttertoast.showToast(msg: 'Facebook clicked');
-                            },
+                            onPressed: (){},
                           ),
                         ],
                       ),
