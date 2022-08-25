@@ -30,17 +30,6 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<bool> validation () async {
-    if(_controllerEmail.text.toString() == null || _controllerEmail.text.toString().isEmpty){
-      Fluttertoast.showToast(msg: 'Enter username');
-      return false;
-    }else if(_controllerPass.text.toString() == null || _controllerPass.text.toString().isEmpty){
-      Fluttertoast.showToast(msg: 'Enter password');
-      return false;
-    } else{
-      return true;
-    }
-  }
   /*Future _signinGoogle() async {
     GoogleSignIn _googleSignin = GoogleSignIn(
       scopes: <String>[
@@ -197,7 +186,11 @@ class _LoginState extends State<Login> {
                           height: (MediaQuery.of(context).size.width) * 0.10,
                           child: ElevatedButton(
                             onPressed: () async {
-                              if(validation() == true){
+                              if(_controllerEmail.text.toString() == null || _controllerEmail.text.toString().isEmpty){
+                                Fluttertoast.showToast(msg: 'Enter username');
+                              }else if(_controllerPass.text.toString() == null || _controllerPass.text.toString().isEmpty){
+                                Fluttertoast.showToast(msg: 'Enter password');
+                              } else{
                                 final String applicat = 'application';
                                 final String authpassword = 'secret';
                                 String basicAuth =
@@ -212,11 +205,10 @@ class _LoginState extends State<Login> {
 
                                 print("checkCode : "+response.body);
                                 print("checkCode : "+response.statusCode.toString());
-
+                                var responseData = UserBaseResponse.fromJson(json.decode(response.body));
                                 if(response.statusCode == 200){
                                   Fluttertoast.showToast(msg: "Login successful!");
                                   try{
-                                    var responseData = UserBaseResponse.fromJson(json.decode(response.body));
                                     String? token = responseData.data?.accessToken.toString();
                                     print("CheckToken :  $token");
                                   }catch(e){
@@ -229,9 +221,11 @@ class _LoginState extends State<Login> {
                                           (route) => false
                                   );
                                 }else{
-                                  Fluttertoast.showToast(msg: 'Invalid credential');
+                                  var errorMsg = responseData.result!.errorMsg;
+                                  Fluttertoast.showToast(msg: '$errorMsg');
                                 }
                               }
+
 
                             },
                             child: Text('Login'),

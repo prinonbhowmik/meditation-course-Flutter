@@ -28,32 +28,12 @@ class _RegistrationState extends State<Registration> {
   final TextEditingController _controllerConfirmPass = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  bool _isObscure = true;
+  bool _isObscure2 = true;
 
   Future<void> _launchUrl(Uri url) async {
     if (!await launchUrl(url)) {
       throw 'Could not launch $url';
-    }
-  }
-
-  Future<bool> validation () async {
-    if(_controllerfullname.text.toString() == null || _controllerfullname.text.toString().isEmpty){
-      Fluttertoast.showToast(msg: 'Enter fullname');
-      return false;
-    }else if(_controllerUser.text.toString() == null || _controllerUser.text.toString().isEmpty){
-      Fluttertoast.showToast(msg: 'Enter username');
-      return false;
-    }else if(_controllerEmail.text.toString() == null || _controllerEmail.text.toString().isEmpty
-        || !_controllerEmail.text.toString().contains("@") || !_controllerEmail.text.toString().contains(".")){
-      Fluttertoast.showToast(msg: 'Enter valid email address');
-      return false;
-    }else if(_controllerPass.text.toString() == null || _controllerPass.text.toString().isEmpty){
-      Fluttertoast.showToast(msg: 'Enter password');
-      return false;
-    }else if(_controllerConfirmPass.text.toString() == null || _controllerConfirmPass.text.toString().isEmpty){
-      Fluttertoast.showToast(msg: 'Enter confirm password');
-      return false;
-    } else{
-      return true;
     }
   }
 
@@ -152,7 +132,8 @@ class _RegistrationState extends State<Registration> {
                           decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               //errorText: "Field can't be empty!",
-                              labelText: "Enter Email Address"),
+                              labelText: "Enter Email Address",
+                          ),
                           keyboardType: TextInputType.emailAddress,
                         ),
                       ),
@@ -166,10 +147,20 @@ class _RegistrationState extends State<Registration> {
                             return null;
                           },*/
                           controller: _controllerPass,
-                          obscureText: true,
-                          decoration: const InputDecoration(
+                          obscureText: _isObscure,
+                          decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure = !_isObscure;
+                                });
+                              },
+                            ),
                             //errorText: "Field can't be empty!",
                           ),
                         ),
@@ -184,10 +175,20 @@ class _RegistrationState extends State<Registration> {
                             return null;
                           },*/
                           controller: _controllerConfirmPass,
-                          obscureText: true,
-                          decoration: const InputDecoration(
+                          obscureText: _isObscure2,
+                          decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'Confirm Password',
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isObscure2 ? Icons.visibility : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isObscure2 = !_isObscure2;
+                                });
+                              },
+                            ),
                             //errorText: "Field can't be empty!",
                           ),
                         ),
@@ -199,50 +200,65 @@ class _RegistrationState extends State<Registration> {
                           height: (MediaQuery.of(context).size.width) * 0.10,
                           child: ElevatedButton(
                             onPressed: () async {
-                              /*if (_formKey.currentState!.validate()) {
+                              if(_controllerfullname.text.toString() == null || _controllerfullname.text.toString().isEmpty){
+                                Fluttertoast.showToast(msg: 'Enter fullname');
+                              }else if(_controllerUser.text.toString() == null || _controllerUser.text.toString().isEmpty){
+                                Fluttertoast.showToast(msg: 'Enter username');
+                              }else if(_controllerEmail.text.toString() == null || _controllerEmail.text.toString().isEmpty
+                                  || !_controllerEmail.text.toString().contains("@") || !_controllerEmail.text.toString().contains(".")){
+                                Fluttertoast.showToast(msg: 'Enter valid email address');
+                              }else if(_controllerPass.text.toString() == null || _controllerPass.text.toString().isEmpty){
+                                Fluttertoast.showToast(msg: 'Enter password');
+                              }else if(_controllerConfirmPass.text.toString() == null || _controllerConfirmPass.text.toString().isEmpty){
+                                Fluttertoast.showToast(msg: 'Enter confirm password');
+                              } else{
+                                if  (_controllerConfirmPass.text.toString()==_controllerPass.text.toString()){
+                                  var response = await http.post(
+                                      Uri.parse(BaseUrl+"signup"),
+                                      body: {
+                                        "fullname":
+                                        _controllerfullname.text.toString(),
+                                        "username":
+                                        _controllerUser.text.toString(),
+                                        "email":
+                                        _controllerEmail.text.toString(),
+                                        "password":
+                                        _controllerConfirmPass.text.toString()
+                                      });
 
-                              }*/
+                                  var responseData = RegisterUser.fromJson(json.decode(response.body));
 
-                              if (validation()==true){
-                                var response = await http.post(
-                                    Uri.parse(BaseUrl+"signup"),
-                                    body: {
-                                      "fullname":
-                                      _controllerfullname.text.toString(),
-                                      "username":
-                                      _controllerUser.text.toString(),
-                                      "email": _controllerEmail.text.toString(),
-                                      "password":
-                                      _controllerConfirmPass.text.toString()
-                                    });
+                                  print("ResponseCode : "+response.statusCode.toString());
 
-                                var responseData = RegisterUser.fromJson(json.decode(response.body));
+                                  if (response.statusCode == 200) {
+                                    Fluttertoast.showToast(msg: "Registration successful!");
 
-                                if (response.statusCode == 200) {
-                                  Fluttertoast.showToast(
-                                      msg: "Registration successful!");
+                                    String? otp = responseData.data!.otp;
 
-                                  String? otp = responseData.data!.otp;
+                                    print("Registration data: "+responseData.data!.otp.toString() +" , "
+                                        +responseData.data!.email.toString());
 
-                                  print("Registration data: "+responseData.data!.otp.toString() +" , "
-                                      +responseData.data!.email.toString());
+                                    Navigator.pushAndRemoveUntil(context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Otp_Verify(
+                                              otp: otp.toString(),
+                                              email:
+                                              responseData.data!.email.toString(),
+                                            )
+                                        ),
+                                            (route) => false
+                                    );
 
-                                  Navigator.pushAndRemoveUntil(context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Otp_Verify(
-                                            otp: otp.toString(),
-                                            email:
-                                            responseData.data!.email.toString(),
-                                          )
-                                      ),
-                                          (route) => false
-                                  );
-
-                                } else {
-                                  Fluttertoast.showToast(
-                                      msg: 'Invalid credential');
+                                  } else {
+                                    var errorMsg = responseData.result!.errorMsg;
+                                    Fluttertoast.showToast(msg: 'Invalid credential');
+                                  }
+                                }
+                                else{
+                                  Fluttertoast.showToast(msg: "Password doesn't matched!");
                                 }
                               }
+
                             },
                             child: Text('Register'),
                             style:
