@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meditation_course/ApiHelper/base_url.dart';
 import 'package:meditation_course/Class/courses.dart';
 import 'package:meditation_course/Class/forgot_password.dart';
 import 'package:meditation_course/Class/registration.dart';
 import 'package:meditation_course/ModelClass/Users/Login/UserBaseResponse.dart';
+import 'package:meditation_course/Utils/google_signin_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
-
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -22,11 +22,6 @@ class _LoginState extends State<Login> {
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPass = TextEditingController();
   var loggedIn = false;
-  var base_url = "http://192.168.68.101:8081/api/";
-  final String applicat = 'application';
-  final String authpassword = 'secret';
-  String basicAuth =
-      'Basic ${base64.encode(utf8.encode('aplication:password'))}';
 
   bool _isObscure = true;
 
@@ -47,9 +42,26 @@ class _LoginState extends State<Login> {
       return true;
     }
   }
+  Future _signinGoogle() async {
+    GoogleSignIn _googleSignin = GoogleSignIn(
+      scopes: <String>[
+        'email',
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
+
+    try {
+     var result = await _googleSignin.signIn();
+
+      print("GoogleTerms : "+result.toString());
+    } catch (error) {
+      print("GoogleTerms : "+error.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -83,11 +95,11 @@ class _LoginState extends State<Login> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.ac_unit_sharp,
                         size: 35,
                       ),
-                      Text(
+                      const Text(
                         'Login',
                         style: TextStyle(fontSize: 20),
                       ),
@@ -176,7 +188,7 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(15.0),
+                        padding: const EdgeInsets.all(15.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -185,7 +197,7 @@ class _LoginState extends State<Login> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => ForgotPassword()
+                                        builder: (context) => const ForgotPassword()
                                     )
                                 );
                               },
@@ -202,11 +214,11 @@ class _LoginState extends State<Login> {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Registration()
+                                        builder: (context) => const Registration()
                                     )
                                 );
                               },
-                              child: Text(
+                              child: const Text(
                                 "Don't have an account? Sign Up",
                                 style: TextStyle(
                                     decoration: TextDecoration.underline,
@@ -221,8 +233,13 @@ class _LoginState extends State<Login> {
                         children: [
                           IconButton(
                             icon: Image.asset("images/google.png"),
-                            onPressed: () {
-                              Fluttertoast.showToast(msg: 'Google clicked');
+                            onPressed:(){
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const SignInDemo()
+                                  )
+                              );
                             },
                           ),
                           IconButton(
@@ -233,7 +250,7 @@ class _LoginState extends State<Login> {
                           ),
                         ],
                       ),
-                      Text(
+                      const Text(
                         'Or sign in with social accounts',
                       ),
                     ],
@@ -263,7 +280,7 @@ class _LoginState extends State<Login> {
                     ],
                   ),
                 )),
-            SizedBox(
+            const SizedBox(
               height: 30,
             )
           ],
